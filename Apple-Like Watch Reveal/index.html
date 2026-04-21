@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apple-Like Watch Reveal</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #000000;
+      --text-soft: rgba(255,255,255,0.82);
+      --text-main: #ff2a2a;
+      --glow: rgba(255, 25, 25, 0.42);
+      --glow-strong: rgba(255, 25, 25, 0.65);
+
+      --frame-width: 430px;
+      --frame-height: 760px;
+
+      --watch-width: 250px;
+
+      --headline-size: clamp(2rem, 6vw, 3.35rem);
+      --script-size: clamp(1.05rem, 2.7vw, 1.35rem);
+      --small-script-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: grid;
+      place-items: center;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, var(--frame-width));
+      height: min(100vh, var(--frame-height));
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 58%, rgba(255, 24, 24, 0.13), transparent 24%),
+        radial-gradient(circle at 50% 58%, rgba(255, 24, 24, 0.09), transparent 38%),
+        linear-gradient(180deg, #030303 0%, #000 45%, #020202 100%);
+      isolation: isolate;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      inset: auto;
+      width: 340px;
+      height: 340px;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 30, 30, 0.20), rgba(255, 30, 30, 0.05) 40%, transparent 72%);
+      filter: blur(28px);
+      opacity: 0.75;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .watch-wrap {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .watch {
+      width: var(--watch-width);
+      max-width: 62vw;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 38px rgba(0,0,0,0.55));
+      transform-origin: center center;
+      opacity: 0;
+    }
+
+    .text-system {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .line {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .line-top {
+      top: 42%;
+      transform: translateY(-50%);
+      z-index: 4;
+    }
+
+    .line-main {
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+    }
+
+    .line-bottom {
+      top: 58%;
+      transform: translateY(-50%);
+      z-index: 4;
+    }
+
+    .script {
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      letter-spacing: -0.02em;
+      color: var(--text-soft);
+      text-shadow: 0 0 10px rgba(255,255,255,0.08);
+      opacity: 0;
+      filter: blur(8px);
+    }
+
+    .script.top {
+      font-size: var(--script-size);
+    }
+
+    .script.bottom {
+      font-size: var(--small-script-size);
+    }
+
+    .headline {
+      font-weight: 800;
+      font-size: var(--headline-size);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      color: var(--text-main);
+      text-shadow:
+        0 0 8px rgba(255, 20, 20, 0.28),
+        0 0 18px rgba(255, 20, 20, 0.25),
+        0 0 38px var(--glow);
+      opacity: 0;
+      filter: blur(16px);
+      transform-origin: center center;
+    }
+
+    .headline .word {
+      display: inline-block;
+      will-change: transform, opacity, filter;
+    }
+
+    .headline-beam {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120%;
+      height: 90px;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 20, 20, 0.00) 20%,
+        rgba(255, 35, 35, 0.16) 50%,
+        rgba(255, 20, 20, 0.00) 80%,
+        transparent 100%
+      );
+      filter: blur(12px);
+      opacity: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 38%, rgba(0,0,0,0.18) 65%, rgba(0,0,0,0.55) 100%);
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 7;
+      opacity: 0.045;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 0.55px, transparent 0.8px),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.55) 0.5px, transparent 0.8px),
+        radial-gradient(circle at 30% 80%, rgba(255,255,255,0.5) 0.45px, transparent 0.8px);
+      background-size: 18px 18px, 22px 22px, 16px 16px;
+      mix-blend-mode: soft-light;
+      pointer-events: none;
+    }
+
+    @media (max-width: 520px) {
+      :root {
+        --watch-width: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="ambient-glow"></div>
+
+    <div class="watch-wrap">
+      <!-- Replace this with your own watch PNG/WebP cutout -->
+      <img
+        class="watch"
+        src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80"
+        alt="Watch"
+      />
+    </div>
+
+    <div class="text-system">
+      <div class="headline-beam"></div>
+
+      <div class="line line-top">
+        <div class="script top">Some of the</div>
+      </div>
+
+      <div class="line line-main">
+        <div class="headline">
+          <span class="word">most</span>
+          <span class="word">&nbsp;powerful</span>
+        </div>
+      </div>
+
+      <div class="line line-bottom">
+        <div class="script bottom">brooding happens</div>
+      </div>
+    </div>
+
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    gsap.set(".watch", {
+      x: -160,
+      rotate: -14,
+      scale: 0.88,
+      filter: "blur(14px) drop-shadow(0 18px 38px rgba(0,0,0,0.55))"
+    });
+
+    gsap.set(".script.top", {
+      x: -90,
+      y: -10
+    });
+
+    gsap.set(".script.bottom", {
+      x: 95,
+      y: 8
+    });
+
+    gsap.set(".headline", {
+      x: -170,
+      scaleX: 1.08,
+      scaleY: 0.96
+    });
+
+    gsap.set(".headline .word", {
+      x: -30,
+      opacity: 0
+    });
+
+    tl
+      .fromTo(".ambient-glow",
+        { scale: 0.72, opacity: 0 },
+        { scale: 1, opacity: 0.78, duration: 1.3, ease: "expo.out" }
+      )
+
+      .to(".watch", {
+        opacity: 0.92,
+        x: 0,
+        rotate: 0,
+        scale: 1,
+        filter: "blur(0px) drop-shadow(0 18px 38px rgba(0,0,0,0.55))",
+        duration: 1.35,
+        ease: "expo.out"
+      }, 0.05)
+
+      .to(".headline-beam", {
+        opacity: 1,
+        x: 24,
+        duration: 0.45,
+        ease: "power2.out"
+      }, 0.4)
+
+      .to(".headline", {
+        opacity: 1,
+        x: 0,
+        filter: "blur(0px)",
+        duration: 1,
+        ease: "expo.out"
+      }, 0.48)
+
+      .to(".headline .word", {
+        x: 0,
+        opacity: 1,
+        stagger: 0.08,
+        duration: 0.85,
+        ease: "power3.out"
+      }, 0.58)
+
+      .to(".script.top", {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.95,
+        ease: "power2.out"
+      }, 0.68)
+
+      .to(".script.bottom", {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 0.95,
+        ease: "power2.out"
+      }, 0.78)
+
+      .to(".headline-beam", {
+        opacity: 0.35,
+        duration: 0.5
+      }, 1.15)
+
+      .to(".headline", {
+        scaleX: 1,
+        scaleY: 1,
+        duration: 0.42,
+        ease: "power2.out"
+      }, 1.0);
+
+    gsap.to(".watch", {
+      y: "-=8",
+      rotate: 0.8,
+      duration: 3.6,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+      delay: 1.9
+    });
+
+    gsap.to(".ambient-glow", {
+      scale: 1.06,
+      opacity: 0.92,
+      duration: 2.8,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+      delay: 1.7
+    });
+
+    gsap.to(".headline", {
+      textShadow: "0 0 10px rgba(255,20,20,0.30), 0 0 24px rgba(255,20,20,0.28), 0 0 50px rgba(255,25,25,0.58)",
+      duration: 2.4,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+      delay: 2
+    });
+  </script>
+</body>
+</html>
