@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rotating Halo Watch Reveal</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #ececec;
+      --text-dark: #0d0d0d;
+      --text-soft: #1b1b1b;
+      --ring-color: rgba(0, 0, 0, 0.62);
+      --watch-shadow: 0 18px 30px rgba(0, 0, 0, 0.18);
+
+      --frame-width: 430px;
+      --frame-height: 760px;
+
+      --halo-size: 270px;
+      --halo-stroke: 2.2;
+      --watch-width: 145px;
+
+      --script-size: clamp(1.9rem, 3.5vw, 2.5rem);
+      --headline-size: clamp(2.2rem, 5vw, 3.25rem);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: grid;
+      place-items: center;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, var(--frame-width));
+      height: min(100vh, var(--frame-height));
+      overflow: hidden;
+      background: var(--bg);
+      isolation: isolate;
+    }
+
+    .top-orb {
+      position: absolute;
+      top: -54px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 40%, #0d0d0d 0%, #050505 58%, #000 100%);
+      filter: blur(1px);
+      opacity: 0.98;
+      z-index: 1;
+    }
+
+    .text-wrap {
+      position: absolute;
+      top: 78px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      text-align: center;
+      z-index: 4;
+      padding: 0 20px;
+    }
+
+    .script-line,
+    .headline-line {
+      will-change: transform, opacity, filter;
+    }
+
+    .script-line {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: var(--script-size);
+      line-height: 0.88;
+      color: var(--text-soft);
+      letter-spacing: -0.04em;
+    }
+
+    .headline-line {
+      margin: 6px 0 0;
+      font-size: var(--headline-size);
+      line-height: 0.92;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--text-dark);
+    }
+
+    .visual-wrap {
+      position: absolute;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      width: var(--halo-size);
+      height: var(--halo-size);
+      z-index: 2;
+      display: grid;
+      place-items: center;
+    }
+
+    .halo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .halo svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .halo circle {
+      fill: none;
+      stroke: var(--ring-color);
+      stroke-width: var(--halo-stroke);
+      stroke-dasharray: 7 9;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .watch {
+      position: relative;
+      width: var(--watch-width);
+      max-width: 42%;
+      z-index: 3;
+      filter: drop-shadow(var(--watch-shadow));
+      transform-origin: center center;
+      will-change: transform, opacity, filter;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .caption {
+      position: absolute;
+      left: 28px;
+      bottom: 40px;
+      font-size: 0.95rem;
+      color: rgba(0,0,0,0.55);
+      z-index: 5;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 520px) {
+      :root {
+        --halo-size: 235px;
+        --watch-width: 128px;
+      }
+
+      .text-wrap {
+        top: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="top-orb"></div>
+
+    <div class="text-wrap">
+      <h2 class="script-line">When you</h2>
+      <h1 class="headline-line">remove decisions</h1>
+    </div>
+
+    <div class="visual-wrap">
+      <div class="halo">
+        <svg viewBox="0 0 300 300" aria-hidden="true">
+          <circle cx="150" cy="150" r="128"></circle>
+        </svg>
+      </div>
+
+      <!-- Replace this with your own transparent PNG/WebP -->
+      <img
+        class="watch"
+        src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=900&q=80"
+        alt="Watch"
+      />
+    </div>
+
+  </div>
+
+  <script>
+    gsap.set(".script-line", {
+      y: 34,
+      opacity: 0,
+      filter: "blur(14px)"
+    });
+
+    gsap.set(".headline-line", {
+      y: 42,
+      opacity: 0,
+      filter: "blur(18px)"
+    });
+
+    gsap.set(".watch", {
+      y: 24,
+      scale: 0.86,
+      rotate: -12,
+      opacity: 0,
+      filter: "blur(12px) drop-shadow(0 18px 30px rgba(0,0,0,0.18))"
+    });
+
+    gsap.set(".halo", {
+      scale: 0.92,
+      opacity: 0
+    });
+
+    gsap.set(".caption", {
+      y: 14,
+      opacity: 0,
+      filter: "blur(8px)"
+    });
+
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    tl
+      .to(".halo", {
+        opacity: 1,
+        scale: 1,
+        duration: 1
+      }, 0.08)
+
+      .to(".watch", {
+        y: 0,
+        scale: 1,
+        rotate: -18,
+        opacity: 1,
+        filter: "blur(0px) drop-shadow(0 18px 30px rgba(0,0,0,0.18))",
+        duration: 1.2,
+        ease: "expo.out"
+      }, 0.12)
+
+      .to(".script-line", {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 0.9,
+        ease: "expo.out"
+      }, 0.28)
+
+      .to(".headline-line", {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 1,
+        ease: "expo.out"
+      }, 0.4)
+
+      .to(".caption", {
+        y: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 0.75
+      }, 0.82);
+
+    gsap.to(".halo", {
+      rotation: 360,
+      duration: 14,
+      repeat: -1,
+      ease: "none"
+    });
+
+    gsap.to(".watch", {
+      y: "-=6",
+      rotation: -16,
+      duration: 2.8,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      delay: 1.6
+    });
+  </script>
+</body>
+</html>
