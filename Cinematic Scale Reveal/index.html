@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinematic Scale Reveal</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --text-main: #f2f2f2;
+      --accent: #ff8a1c;
+      --shadow: rgba(0,0,0,0.45);
+
+      --frame-width: 430px;
+      --frame-height: 760px;
+
+      --hero-width: 340px;
+      --headline-size: clamp(4rem, 11vw, 7rem);
+      --subtle-glow: rgba(255,138,28,0.18);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: grid;
+      place-items: center;
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    .stage {
+      position: relative;
+      width: min(100vw, var(--frame-width));
+      height: min(100vh, var(--frame-height));
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 70%, rgba(255,138,28,0.08), transparent 30%),
+        linear-gradient(180deg, #111 0%, #080808 100%);
+      isolation: isolate;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.8) 0.5px, transparent 0.8px),
+        radial-gradient(circle at 70% 40%, rgba(255,255,255,0.5) 0.4px, transparent 0.8px);
+      background-size: 18px 18px, 24px 24px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .headline-wrap {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      text-align: center;
+      width: 100%;
+    }
+
+    .headline {
+      font-weight: 900;
+      font-size: var(--headline-size);
+      line-height: 0.85;
+      letter-spacing: -0.08em;
+      color: var(--text-main);
+      text-transform: uppercase;
+      filter: blur(0px);
+      transform-origin: center center;
+      will-change: transform, opacity, filter;
+      text-shadow: 0 0 24px rgba(255,255,255,0.03);
+    }
+
+    .accent-circle {
+      position: absolute;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--accent);
+      left: 72px;
+      top: 155px;
+      z-index: 4;
+      box-shadow: 0 0 30px var(--subtle-glow);
+    }
+
+    .hero-wrap {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .hero {
+      width: var(--hero-width);
+      max-width: 82%;
+      object-fit: contain;
+      filter: drop-shadow(0 22px 40px var(--shadow));
+      transform-origin: center bottom;
+      will-change: transform, opacity, filter;
+      opacity: 0;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 55%, transparent 30%, rgba(0,0,0,0.12) 60%, rgba(0,0,0,0.45) 100%);
+      z-index: 7;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="grain"></div>
+
+  <div class="headline-wrap">
+    <div class="headline">
+      NAPOLEON
+    </div>
+  </div>
+
+  
+
+  <div class="hero-wrap">
+    <!-- Replace with your transparent PNG -->
+    <img
+      class="hero"
+      src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80"
+      alt="Hero Asset"
+    />
+  </div>
+
+  <div class="vignette"></div>
+
+</div>
+
+<script>
+  gsap.set(".hero", {
+    scale: 0.82,
+    y: 90,
+    opacity: 0,
+    filter: "blur(14px) drop-shadow(0 22px 40px rgba(0,0,0,0.45))"
+  });
+
+  gsap.set(".headline", {
+    scale: 0.82,
+    y: 30,
+    opacity: 0,
+    filter: "blur(18px)"
+  });
+
+  gsap.set(".accent-circle", {
+    scale: 0.6,
+    opacity: 0
+  });
+
+  const tl = gsap.timeline({
+    defaults: {
+      ease: "power3.out"
+    }
+  });
+
+  tl
+
+  .to(".hero", {
+    scale: 1,
+    y: 0,
+    opacity: 1,
+    filter: "blur(0px) drop-shadow(0 22px 40px rgba(0,0,0,0.45))",
+    duration: 1.4,
+    ease: "expo.out"
+  }, 0)
+
+  .to(".headline", {
+    scale: 1,
+    y: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+    duration: 1.15,
+    ease: "expo.out"
+  }, 0.2)
+
+  .to(".accent-circle", {
+    scale: 1,
+    opacity: 1,
+    duration: 0.8
+  }, 0.45)
+
+  /* HOLD MOMENT */
+
+  .to({}, { duration: 0.6 })
+
+  /* APPLE-LIKE CLEAN TEXT EXIT */
+
+  .to(".headline", {
+    y: -120,
+    opacity: 0,
+    scale: 1.08,
+    filter: "blur(10px)",
+    duration: 1,
+    ease: "power2.inOut"
+  })
+
+  .to(".accent-circle", {
+    y: -80,
+    opacity: 0,
+    scale: 1.15,
+    duration: 0.9,
+    ease: "power2.inOut"
+  }, "<")
+
+  /* HERO CONTINUES SUBTLE SCALE */
+
+  .to(".hero", {
+    scale: 1.08,
+    duration: 2.2,
+    ease: "sine.inOut"
+  }, "<");
+
+  gsap.to(".hero", {
+    y: "-=8",
+    duration: 3,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut",
+    delay: 2
+  });
+</script>
+
+</body>
+</html>
