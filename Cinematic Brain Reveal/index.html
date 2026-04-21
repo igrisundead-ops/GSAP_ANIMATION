@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinematic Brain Reveal</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <!-- cinematic cursive + clean support font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg1: #f8f8f6;
+      --bg2: #efefec;
+      --text: #111111;
+      --muted: rgba(17, 17, 17, 0.42);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #f5f5f2;
+      font-family: "Inter", sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 72% 42%, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 34%),
+        linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    /* plain background only, no giant shape block */
+    .soft-vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.35), transparent 34%),
+        radial-gradient(circle at 85% 18%, rgba(255,255,255,0.22), transparent 26%);
+      z-index: 1;
+    }
+
+    .content {
+      position: absolute;
+      left: 7.5%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 4;
+      max-width: 520px;
+    }
+
+    .headline {
+      font-family: "Cormorant Garamond", serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: clamp(64px, 8vw, 122px);
+      line-height: 0.9;
+      letter-spacing: -0.045em;
+      color: var(--text);
+      will-change: transform, opacity, filter;
+      text-wrap: balance;
+    }
+
+    .subtle-line {
+      margin-top: 18px;
+      width: 84px;
+      height: 1px;
+      background: linear-gradient(to right, rgba(17,17,17,0.22), rgba(17,17,17,0));
+      opacity: 0.8;
+      will-change: transform, opacity, filter;
+    }
+
+    .caption {
+      margin-top: 18px;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      will-change: transform, opacity, filter;
+    }
+
+    .asset-wrap {
+      position: absolute;
+      right: 7%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      will-change: transform, opacity, filter;
+    }
+
+    .asset {
+      width: min(41vw, 560px);
+      display: block;
+      user-select: none;
+      pointer-events: none;
+      filter:
+        drop-shadow(0 16px 30px rgba(115, 170, 255, 0.10))
+        drop-shadow(0 42px 90px rgba(0, 0, 0, 0.10));
+      transform-origin: center center;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      right: -20px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(173, 212, 255, 0.18) 0%, rgba(173, 212, 255, 0.08) 28%, rgba(173, 212, 255, 0) 68%);
+      filter: blur(24px);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        left: 6%;
+        max-width: 320px;
+      }
+
+      .asset {
+        width: min(48vw, 360px);
+      }
+
+      .ambient-glow {
+        width: 340px;
+        height: 340px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="scene">
+    <div class="soft-vignette"></div>
+    <div class="ambient-glow"></div>
+
+    <div class="content">
+      <h1 class="headline">Intelligence<br>Engineered</h1>
+      <div class="subtle-line"></div>
+
+    </div>
+
+    <div class="asset-wrap" id="assetWrap">
+      <img
+        class="asset"
+        src="https://commons.wikimedia.org/wiki/Special:FilePath/Human_brain.svg"
+        alt="Brain asset"
+      />
+    </div>
+  </section>
+
+  <script>
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    gsap.set("#assetWrap", {
+      scale: 0.72,
+      opacity: 0,
+      x: 180,
+      filter: "blur(18px)"
+    });
+
+    gsap.set([".headline", ".subtle-line", ".caption"], {
+      opacity: 0,
+      y: 36,
+      filter: "blur(16px)"
+    });
+
+    tl.to("#assetWrap", {
+      opacity: 1,
+      scale: 1,
+      x: 0,
+      filter: "blur(0px)",
+      duration: 1.55,
+      ease: "expo.out"
+    })
+    .to("#assetWrap", {
+      x: -260,
+      duration: 1.45,
+      ease: "power2.inOut"
+    }, "+=0.12")
+    .to(".headline", {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 1.1,
+      ease: "power3.out"
+    }, "-=0.95")
+    .to(".subtle-line", {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 0.9
+    }, "-=0.88")
+    .to(".caption", {
+      opacity: 1,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 0.9
+    }, "-=0.8");
+
+    gsap.to("#assetWrap", {
+      y: "-=10",
+      duration: 3.4,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+  </script>
+</body>
+</html>
