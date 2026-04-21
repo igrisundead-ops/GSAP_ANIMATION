@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Poster Card Intro</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #050505;
+      --card: #eceae7;
+      --ink: #111111;
+      --edge: rgba(255,255,255,0.32);
+      --shadow: rgba(0,0,0,0.38);
+      --glow: rgba(255,255,255,0.18);
+
+      --card-w: 280px;
+      --card-h: 460px;
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: "Times New Roman", serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      perspective: 1800px;
+      perspective-origin: 50% 50%;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(255,255,255,0.06), transparent 28%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.025), transparent 55%),
+        #050505;
+    }
+
+    .card-wrap {
+      position: relative;
+      width: var(--card-w);
+      height: var(--card-h);
+      transform-style: preserve-3d;
+      will-change: transform, filter, opacity;
+    }
+
+    .card {
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #f2f0ed 0%, #e8e5e1 100%);
+      box-shadow:
+        0 30px 80px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.85),
+        inset 0 -1px 0 rgba(0,0,0,0.06);
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.55), transparent 22%, transparent 78%, rgba(255,255,255,0.18)),
+        radial-gradient(circle at 22% 16%, rgba(255,255,255,0.6), transparent 24%);
+      mix-blend-mode: screen;
+      opacity: 0.7;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+      pointer-events: none;
+    }
+
+    .rim {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      border: 1px solid var(--edge);
+      pointer-events: none;
+      opacity: 0.65;
+      transform: translateZ(2px);
+    }
+
+    .content {
+      position: absolute;
+      inset: 0;
+      padding: 28px 22px;
+      transform-style: preserve-3d;
+    }
+
+    .joker-left,
+    .joker-right {
+      position: absolute;
+      color: #1a1a1a;
+      font-size: 28px;
+      letter-spacing: 2px;
+      opacity: 0.78;
+      user-select: none;
+      transform-style: preserve-3d;
+    }
+
+    .joker-left {
+      top: 16px;
+      left: 16px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: translateZ(16px);
+      filter: blur(3px);
+    }
+
+    .joker-right {
+      right: 14px;
+      bottom: 20px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg) translateZ(16px);
+      transform-origin: center;
+    }
+
+    .asset-shell {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .asset {
+      width: 72%;
+      max-width: 220px;
+      aspect-ratio: 0.82;
+      position: relative;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 16px 28px rgba(0,0,0,0.18));
+      transform: translateZ(34px);
+    }
+
+    .asset img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      filter: grayscale(1) contrast(1.02) brightness(1.01);
+    }
+
+    .asset-glow {
+      position: absolute;
+      left: 50%;
+      top: 54%;
+      width: 72%;
+      height: 72%;
+      transform: translate(-50%, -50%) translateZ(8px);
+      background: radial-gradient(circle, rgba(255,255,255,0.24), transparent 68%);
+      filter: blur(30px);
+      opacity: 0.38;
+      pointer-events: none;
+    }
+
+    .floor-shadow {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 300px;
+      height: 90px;
+      transform: translate(-50%, 180px);
+      background: radial-gradient(circle, rgba(0,0,0,0.42), transparent 70%);
+      filter: blur(20px);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 48%, rgba(0,0,0,0.18) 100%);
+      opacity: 0.75;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="floor-shadow"></div>
+
+    <div class="card-wrap" id="cardWrap">
+      <div class="card" id="card">
+        <div class="rim"></div>
+
+        <div class="content">
+          <div class="joker-left">JOKER</div>
+          <div class="joker-right">JOKER</div>
+
+          <div class="asset-shell">
+            <div class="asset-glow"></div>
+            <div class="asset" id="asset">
+              <!-- Replace with your own transparent PNG -->
+              <img
+                src="https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=700&q=80"
+                alt="main character asset"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="vignette"></div>
+  </div>
+
+  <script>
+    gsap.set(".card-wrap", {
+      rotateY: -28,
+      rotateX: 10,
+      rotateZ: -5,
+      x: 120,
+      y: -10,
+      z: -120,
+      scale: 0.86,
+      opacity: 0,
+      filter: "blur(18px)"
+    });
+
+    gsap.set(".card", {
+      transformOrigin: "50% 50%"
+    });
+
+    gsap.set("#asset", {
+      y: 20,
+      scale: 0.92,
+      rotation: -5,
+      opacity: 0,
+      filter: "blur(10px)"
+    });
+
+    gsap.set(".joker-left", {
+      x: -8,
+      opacity: 0
+    });
+
+    gsap.set(".joker-right", {
+      x: 10,
+      opacity: 0
+    });
+
+    const tl = gsap.timeline({
+      defaults: {
+        ease: "power3.out"
+      }
+    });
+
+    tl.to(".card-wrap", {
+      opacity: 1,
+      duration: 0.45,
+      filter: "blur(0px)"
+    }, 0)
+
+    .to(".card-wrap", {
+      rotateY: 0,
+      rotateX: 0,
+      rotateZ: 0,
+      x: 0,
+      y: 0,
+      z: 0,
+      scale: 1,
+      duration: 1.55,
+      ease: "expo.out"
+    }, 0)
+
+    .to("#asset", {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      rotation: 0,
+      filter: "blur(0px)",
+      duration: 1.1,
+      ease: "power3.out"
+    }, 0.28)
+
+    .to(".joker-left", {
+      opacity: 0.8,
+      x: 0,
+      filter: "blur(1px)",
+      duration: 0.8
+    }, 0.5)
+
+    .to(".joker-right", {
+      opacity: 0.8,
+      x: 0,
+      duration: 0.8
+    }, 0.56)
+
+    .to(".card-wrap", {
+      y: -8,
+      duration: 0.6,
+      ease: "sine.out"
+    }, 1.0)
+
+    .to(".card-wrap", {
+      x: "-28vw",
+      y: "24vh",
+      scale: 0.84,
+      rotateZ: -6,
+      duration: 1.25,
+      ease: "expo.inOut"
+    }, 2.0);
+
+    gsap.to(".card-wrap", {
+      y: "+=8",
+      rotateZ: "-=0.8",
+      duration: 3.2,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+      delay: 3.4
+    });
+
+    gsap.to("#asset", {
+      y: "+=6",
+      duration: 2.6,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1,
+      delay: 3.2
+    });
+
+    gsap.to(".floor-shadow", {
+      scaleX: 0.92,
+      opacity: 0.62,
+      duration: 2.8,
+      ease: "sine.inOut",
+      yoyo: true,
+      repeat: -1
+    });
+  </script>
+</body>
+</html>
