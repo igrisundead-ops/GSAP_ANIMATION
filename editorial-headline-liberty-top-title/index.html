@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liberty Editorial Reveal</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #050505;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 420px;
+      height: 560px;
+      background: #f3f3f3;
+      overflow: hidden;
+    }
+
+    /* Main headline now sits directly above rectangle */
+    .title-wrap {
+      position: absolute;
+      left: 7%;
+      top: 30%;
+      z-index: 8;
+      overflow: hidden;
+    }
+
+    .title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 5.2rem;
+      font-weight: 700;
+      color: #0b0b0b;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+
+      /* faster reveal */
+      transform: translateY(80%);
+      opacity: 0;
+    }
+
+    /* Red rectangle */
+    .red-panel {
+      position: absolute;
+      left: 6%;
+      bottom: 0;
+      width: 60%;
+      height: 58%;
+      background: #c40000;
+      z-index: 1;
+
+      transform: translateY(110%);
+      transform-origin: bottom center;
+      box-shadow:
+        0 14px 30px rgba(0,0,0,0.18);
+    }
+
+    /* Third asset over rectangle */
+    .asset-wrap {
+      position: absolute;
+      left: 18%;
+      bottom: 0;
+      width: 46%;
+      z-index: 5;
+
+      opacity: 0;
+      transform: translateY(90px) scale(1.08);
+      filter: blur(12px);
+      transform-origin: bottom center;
+    }
+
+    .asset {
+      width: 100%;
+      display: block;
+      object-fit: contain;
+      filter: grayscale(100%) contrast(1.08) brightness(0.95);
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 9;
+      pointer-events: none;
+      background:
+        radial-gradient(
+          circle at center,
+          transparent 42%,
+          rgba(0,0,0,0.04) 72%,
+          rgba(0,0,0,0.12) 100%
+        );
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.05;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.03) 0px,
+          rgba(0,0,0,0.03) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+    }
+  </style>
+</head>
+<body>
+
+<div class="scene">
+
+  <div class="title-wrap">
+    <div class="title">Liberty</div>
+  </div>
+
+  <div class="red-panel"></div>
+
+  <!-- Third animated asset -->
+  <div class="asset-wrap">
+    <img
+      class="asset"
+      src="YOUR_MAIN_ASSET.png"
+      alt="Main asset"
+    />
+  </div>
+
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+</div>
+
+<script>
+  const tl = gsap.timeline({
+    defaults: {
+      ease: "power3.out"
+    }
+  });
+
+  /*
+    Faster sequencing:
+    rectangle -> asset blur in -> fast title reveal
+  */
+
+  tl.to(".red-panel", {
+    y: 0,
+    duration: 0.75,
+    ease: "power4.out"
+  });
+
+  tl.to(".asset-wrap", {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: "blur(0px)",
+    duration: 1.05,
+    ease: "power4.out"
+  }, "-=0.28");
+
+  /* small premium settle */
+  tl.to(".asset-wrap", {
+    y: -8,
+    duration: 0.18,
+    ease: "power1.out"
+  }, ">-0.08");
+
+  tl.to(".asset-wrap", {
+    y: 0,
+    duration: 0.22,
+    ease: "power2.out"
+  });
+
+  /* headline much faster now */
+  tl.to(".title", {
+    y: 0,
+    opacity: 1,
+    duration: 0.45,
+    ease: "power4.out"
+  }, "-=0.08");
+
+  /* subtle idle motion */
+  gsap.to(".asset-wrap", {
+    y: -4,
+    duration: 2.6,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+  });
+
+  gsap.to(".grain", {
+    opacity: 0.08,
+    duration: 0.4,
+    repeat: -1,
+    yoyo: true,
+    ease: "sine.inOut"
+  });
+</script>
+
+</body>
+</html>
