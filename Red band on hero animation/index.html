@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinematic Portrait Reveal</title>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #050505;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 420px;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .portrait-wrap {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      transform-origin: center center;
+      filter: blur(10px);
+      opacity: 0;
+    }
+
+    .portrait {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.08);
+      filter: grayscale(100%) contrast(1.05) brightness(0.72);
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center, transparent 38%, rgba(0,0,0,0.35) 72%, rgba(0,0,0,0.7) 100%);
+      z-index: 3;
+    }
+
+    .eye-band-wrap {
+      position: absolute;
+      left: 8%;
+      width: 84%;
+      top: 29%;
+      height: 15%;
+      overflow: hidden;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .eye-band {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(140, 0, 0, 0.88) 0%,
+          rgba(255, 45, 45, 0.92) 50%,
+          rgba(140, 0, 0, 0.88) 100%
+        );
+      mix-blend-mode: screen;
+      transform: translateX(-110%) skewX(-18deg);
+      opacity: 0.92;
+      box-shadow:
+        0 0 18px rgba(255, 0, 0, 0.22),
+        0 0 45px rgba(255, 0, 0, 0.12);
+    }
+
+    .band-glow {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 30, 30, 0.16);
+      filter: blur(18px);
+      transform: scaleX(0.5);
+      opacity: 0;
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.03) 0px,
+          rgba(255,255,255,0.03) 1px,
+          transparent 1px,
+          transparent 3px
+        );
+    }
+
+    .title {
+      position: absolute;
+      bottom: 9%;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9;
+      color: #d93030;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 2rem;
+      opacity: 0;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="portrait-wrap">
+      <img
+        class="portrait"
+        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80"
+        alt="portrait"
+      />
+    </div>
+
+    <div class="eye-band-wrap">
+      <div class="band-glow"></div>
+      <div class="eye-band"></div>
+    </div>
+
+    <div class="vignette"></div>
+    <div class="grain"></div>
+    <div class="title">Rehman</div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    tl.fromTo(".portrait-wrap",
+      {
+        y: 90,
+        scale: 1.06,
+        opacity: 0,
+        filter: "blur(14px)"
+      },
+      {
+        y: 0,
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        duration: 1.35,
+        ease: "power4.out"
+      }
+    );
+
+    tl.to(".portrait", {
+      scale: 1,
+      duration: 1.35,
+      ease: "power3.out"
+    }, 0);
+
+    tl.to(".portrait-wrap", {
+      y: -8,
+      duration: 0.22,
+      ease: "power1.out"
+    }, ">-0.12");
+
+    tl.to(".portrait-wrap", {
+      y: 0,
+      duration: 0.28,
+      ease: "power2.out"
+    });
+
+    tl.fromTo(".eye-band",
+      {
+        xPercent: -110,
+        skewX: -18,
+        opacity: 0.9
+      },
+      {
+        xPercent: 0,
+        skewX: -18,
+        duration: 0.62,
+        ease: "power4.out"
+      },
+      "+=0.16"
+    );
+
+    tl.fromTo(".band-glow",
+      {
+        opacity: 0,
+        scaleX: 0.45
+      },
+      {
+        opacity: 1,
+        scaleX: 1,
+        duration: 0.35,
+        ease: "power2.out"
+      },
+      "<+0.03"
+    );
+
+    tl.to(".band-glow", {
+      opacity: 0.95,
+      duration: 1.98,
+      ease: "power1.out"
+    });
+
+    tl.to(".eye-band", {
+      opacity: 1,
+      duration: 1.15
+    }, "<");
+
+    tl.fromTo(".title",
+      {
+        y: 24,
+        opacity: 0
+      },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1.55,
+        ease: "power3.out"
+      },
+      "-=0.15"
+    );
+  </script>
+</body>
+</html>
