@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>handshake-collab-beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{--bg:#ece9df;--bg2:#e5e1d5;--ink:#121212;}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;font-family:Inter,system-ui,sans-serif;}
+    .frame{
+      position:relative;width:430px;height:760px;overflow:hidden;
+      background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--ink);
+    }
+    .headline{
+      position:absolute; left:42px; top:226px;
+      font-size:50px; line-height:.93; letter-spacing:-.06em; font-weight:760;
+    }
+    .asset-slot{
+      position:absolute;
+      right:4px; bottom:152px;
+      width:304px; height:182px;
+      border-radius:28px;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.85), rgba(255,255,255,.18)),
+        linear-gradient(135deg, #222, #111);
+      box-shadow:0 24px 50px rgba(0,0,0,.14);
+    }
+    .asset-slot::before{
+      content:"";
+      position:absolute; left:18px; right:18px; top:68px; height:46px;
+      border-radius:999px;
+      background:linear-gradient(90deg,#f7f5ef 0 50%, #121212 50% 100%);
+      opacity:.92;
+    }
+    .leaf{
+      position:absolute; left:42px; bottom:108px;
+      width:70px; height:70px; opacity:.34;
+    }
+    .leaf span{
+      position:absolute;
+      width:20px; height:11px;
+      border-radius:100% 0 100% 0;
+      background:rgba(18,18,18,.2);
+    }
+    .leaf span:nth-child(1){left:8px;top:46px;transform:rotate(-38deg)}
+    .leaf span:nth-child(2){left:20px;top:34px;transform:rotate(-12deg)}
+    .leaf span:nth-child(3){left:31px;top:22px;transform:rotate(10deg)}
+    .leaf span:nth-child(4){left:40px;top:10px;transform:rotate(30deg)}
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="headline">Let’s Collab?</div>
+
+    <div class="leaf">
+      <span></span><span></span><span></span><span></span>
+    </div>
+
+    <!-- replace with real handshake / product / partnership asset -->
+    <div class="asset-slot"></div>
+  </div>
+
+  <script>
+    gsap.set(".asset-slot",{x:120,scale:.96,opacity:0,filter:"blur(10px)"});
+    gsap.set(".headline",{y:16,opacity:0,filter:"blur(10px)"});
+    gsap.set(".leaf",{y:10,opacity:0,filter:"blur(8px)"});
+
+    gsap.timeline()
+      .to(".asset-slot",{
+        x:0,scale:1,opacity:1,filter:"blur(0px)",
+        duration:1.02,ease:"expo.out"
+      })
+      .to(".leaf",{
+        y:0,opacity:1,filter:"blur(0px)",
+        duration:.72,ease:"power3.out"
+      },"<0.16")
+      .to(".headline",{
+        y:0,opacity:1,filter:"blur(0px)",
+        duration:.82,ease:"power3.out"
+      },"<0.08");
+  </script>
+</body>
+</html>

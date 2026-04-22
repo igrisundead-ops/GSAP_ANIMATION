@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fragmented Face Intro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{
+      --bg1:#dddddd;
+      --bg2:#d2d2d2;
+      --ink:#6a1f37;
+      --text:#2f2f2f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      font-family:Georgia,"Times New Roman",serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .stage{
+      position:relative;
+      width:min(100vw,720px);
+      height:100vh;
+      aspect-ratio:9/16;
+      margin:auto;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,.78), rgba(255,255,255,0) 42%),
+        linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .arc{
+      position:absolute;border:2px solid rgba(255,255,255,.22);
+      border-radius:50%;transform:rotate(-18deg);
+    }
+    .arc.a1{width:1100px;height:1100px;left:-630px;top:160px}
+    .arc.a2{width:900px;height:900px;right:-520px;top:-70px}
+    .wrap{
+      position:absolute;left:50%;top:46%;
+      width:360px;height:500px;transform:translate(-50%,-50%);
+      filter:drop-shadow(0 24px 40px rgba(0,0,0,.18));
+    }
+    .hero{
+      width:100%;height:100%;object-fit:contain;display:block;
+    }
+    .particles{
+      position:absolute;right:-10px;top:92px;width:180px;height:220px;
+      pointer-events:none;
+    }
+    .particle{
+      position:absolute;
+      border-radius:4px;
+      background:linear-gradient(180deg,#c0718c,#7d233d);
+      opacity:0;
+      box-shadow:0 6px 18px rgba(87,16,37,.18);
+    }
+    .copy{
+      position:absolute;left:52px;right:52px;bottom:120px;
+    }
+    .kicker{
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:26px;color:var(--text);margin-bottom:10px;
+      opacity:0;
+    }
+    .headline{
+      font-size:clamp(62px,8vw,100px);
+      line-height:.88;letter-spacing:-.055em;color:var(--ink);
+    }
+    .headline .char{display:inline-block;opacity:0}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="arc a1"></div>
+    <div class="arc a2"></div>
+
+    <div class="wrap">
+      <img
+        class="hero"
+        src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=900&q=80"
+        alt="Face or mask asset"
+      />
+      <div class="particles"></div>
+    </div>
+
+    <div class="copy">
+      <div class="kicker">People don’t buy</div>
+      <h1 class="headline" id="headline">what they see</h1>
+    </div>
+  </div>
+
+  <script>
+    const headline = document.getElementById("headline");
+    headline.innerHTML = headline.textContent.split("").map(c =>
+      c === " " ? `<span class="char">&nbsp;</span>` : `<span class="char">${c}</span>`
+    ).join("");
+
+    const particlesWrap = document.querySelector(".particles");
+    for (let i = 0; i < 34; i++) {
+      const p = document.createElement("div");
+      p.className = "particle";
+      const size = gsap.utils.random(8, 18);
+      p.style.width = `${size}px`;
+      p.style.height = `${size}px`;
+      p.style.left = `${gsap.utils.random(10, 150)}px`;
+      p.style.top = `${gsap.utils.random(20, 180)}px`;
+      particlesWrap.appendChild(p);
+    }
+
+    const tl = gsap.timeline();
+
+    tl.fromTo(".hero",
+      { scale: .82, y: 90, rotation: -8, filter: "blur(18px)" },
+      { scale: 1, y: 0, rotation: 0, filter: "blur(0px)", duration: 1.1, ease: "power3.out" }
+    )
+    .to(".particle", {
+      opacity: 1,
+      x: () => gsap.utils.random(40, 120),
+      y: () => gsap.utils.random(-40, 60),
+      rotation: () => gsap.utils.random(-120, 120),
+      scale: () => gsap.utils.random(.5, 1.4),
+      stagger: { each: .012, from: "random" },
+      duration: .9,
+      ease: "power2.out"
+    }, "-=.9")
+    .fromTo(".kicker",
+      { y: 22, opacity: 0, filter: "blur(8px)" },
+      { y: 0, opacity: 1, filter: "blur(0px)", duration: .55, ease: "power2.out" },
+      "-=.7"
+    )
+    .fromTo(".headline .char",
+      { y: 40, opacity: 0, filter: "blur(10px)" },
+      { y: 0, opacity: 1, filter: "blur(0px)", stagger: .02, duration: .6, ease: "power3.out" },
+      "-=.35"
+    )
+    .to(".hero", {
+      y: -10,
+      duration: 1.6,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut"
+    });
+  </script>
+</body>
+</html>

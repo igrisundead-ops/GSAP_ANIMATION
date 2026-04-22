@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision Eye Beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{--bg1:#dddddd;--bg2:#d2d2d2;--ink:#6a1f37;--text:#2f2f2f}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      font-family:Georgia,"Times New Roman",serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .stage{
+      position:relative;width:min(100vw,720px);height:100vh;aspect-ratio:9/16;
+      margin:auto;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .vision-line{
+      position:absolute;width:2px;background:rgba(55,55,55,.55);
+      transform-origin:top center;opacity:0;z-index:1;
+    }
+    .line-left{height:250px;left:31%;top:46%;transform:rotate(58deg)}
+    .line-mid{height:240px;left:50%;top:46%;transform:rotate(0deg)}
+    .line-right{height:250px;left:69%;top:46%;transform:rotate(-58deg)}
+    .asset{
+      position:absolute;left:50%;top:50%;
+      width:190px;height:190px;transform:translate(-50%,-50%);
+      z-index:3;
+      filter:drop-shadow(0 20px 30px rgba(0,0,0,.18));
+    }
+    .asset img{width:100%;height:100%;object-fit:contain;display:block}
+    .viewfinder{
+      position:absolute;width:170px;height:170px;left:50%;top:50%;
+      transform:translate(-50%,-50%);z-index:4;opacity:0;
+    }
+    .viewfinder::before,.viewfinder::after,.viewfinder span::before,.viewfinder span::after{
+      content:"";position:absolute;width:24px;height:24px;
+      border-color:rgba(60,60,60,.72);border-style:solid;
+    }
+    .viewfinder::before{left:0;top:0;border-width:2px 0 0 2px}
+    .viewfinder::after{right:0;top:0;border-width:2px 2px 0 0}
+    .viewfinder span::before{left:0;bottom:0;border-width:0 0 2px 2px}
+    .viewfinder span::after{right:0;bottom:0;border-width:0 2px 2px 0}
+    .copy{position:absolute;left:52px;right:52px;bottom:120px;z-index:5}
+    .kicker{
+      font-family:Arial,Helvetica,sans-serif;font-size:26px;color:var(--text);
+      margin-bottom:10px;opacity:0;
+    }
+    .headline{
+      font-size:clamp(62px,8vw,100px);
+      line-height:.88;letter-spacing:-.055em;color:var(--ink);
+    }
+    .headline .char{display:inline-block;opacity:0}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="vision-line line-left"></div>
+    <div class="vision-line line-mid"></div>
+    <div class="vision-line line-right"></div>
+
+    <div class="asset">
+      <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" alt="Eye asset" />
+    </div>
+
+    <div class="viewfinder"><span></span></div>
+
+    <div class="copy">
+      
+      <h1 class="headline" id="headline">vision</h1>
+    </div>
+  </div>
+
+  <script>
+    const headline = document.getElementById("headline");
+    headline.innerHTML = headline.textContent.split("").map(c =>
+      c === " " ? `<span class="char">&nbsp;</span>` : `<span class="char">${c}</span>`
+    ).join("");
+
+    gsap.timeline()
+      .fromTo(".asset",
+        { y: 100, scale: .68, filter: "blur(18px)" },
+        { y: 0, scale: 1, filter: "blur(0px)", duration: .9, ease: "power3.out" }
+      )
+      .fromTo(".vision-line",
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, stagger: .08, duration: .38, ease: "power2.out" },
+        "-=.45"
+      )
+      .fromTo(".viewfinder",
+        { opacity: 0, scale: 1.2 },
+        { opacity: 1, scale: 1, duration: .45, ease: "power2.out" },
+        "-=.15"
+      )
+      .fromTo(".kicker",
+        { y: 20, opacity: 0, filter: "blur(7px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: .45, ease: "power2.out" },
+        "-=.3"
+      )
+      .fromTo(".headline .char",
+        { y: 34, opacity: 0, filter: "blur(10px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", stagger: .02, duration: .56, ease: "power3.out" },
+        "-=.2"
+      );
+  </script>
+</body>
+</html>

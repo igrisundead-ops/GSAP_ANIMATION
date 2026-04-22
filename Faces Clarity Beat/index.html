@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Faces Clarity Beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{--bg1:#dddddd;--bg2:#d2d2d2;--ink:#6a1f37;--text:#2f2f2f}
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      font-family:Georgia,"Times New Roman",serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .stage{
+      position:relative;width:min(100vw,720px);height:100vh;aspect-ratio:9/16;
+      margin:auto;overflow:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .asset{
+      position:absolute;left:50%;top:40%;
+      width:320px;height:440px;
+      transform:translate(-50%,-50%) rotate(8deg);
+      filter:drop-shadow(0 24px 40px rgba(0,0,0,.18));
+    }
+    .asset img{width:100%;height:100%;object-fit:contain;display:block}
+    .copy{position:absolute;left:52px;right:52px;bottom:120px}
+    .kicker{
+      font-family:Arial,Helvetica,sans-serif;font-size:26px;
+      color:var(--text);margin-bottom:10px;opacity:0;
+    }
+    .headline{
+      font-size:clamp(62px,8vw,100px);
+      line-height:.88;letter-spacing:-.055em;color:var(--ink);
+    }
+    .headline .char{display:inline-block;opacity:0}
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="asset">
+      <img src="https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?auto=format&fit=crop&w=900&q=80" alt="Face asset" />
+    </div>
+
+    <div class="copy">
+  
+      <h1 class="headline" id="headline">faces</h1>
+    </div>
+  </div>
+
+  <script>
+    const headline = document.getElementById("headline");
+    headline.innerHTML = headline.textContent.split("").map(c =>
+      c === " " ? `<span class="char">&nbsp;</span>` : `<span class="char">${c}</span>`
+    ).join("");
+
+    gsap.timeline()
+      .fromTo(".asset",
+        { y: 80, scale: .86, rotation: 20, filter: "blur(20px)" },
+        { y: 0, scale: 1, rotation: 8, filter: "blur(0px)", duration: .95, ease: "power3.out" }
+      )
+      .fromTo(".kicker",
+        { y: 26, opacity: 0, filter: "blur(8px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: .46, ease: "power2.out" },
+        "-=.5"
+      )
+      .fromTo(".headline .char",
+        { y: 35, opacity: 0, filter: "blur(9px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", stagger: .018, duration: .55, ease: "power3.out" },
+        "-=.26"
+      );
+  </script>
+</body>
+</html>

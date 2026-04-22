@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>subject-ring-authority-beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{--bg:#ece9df;--bg2:#e5e1d5;--ink:#121212;}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;font-family:Inter,system-ui,sans-serif;}
+    .frame{
+      position:relative;width:430px;height:760px;overflow:hidden;
+      background:linear-gradient(180deg,var(--bg),var(--bg2)); color:var(--ink);
+    }
+    .ring{
+      position:absolute;
+      width:620px;height:620px;
+      right:-320px;top:-170px;
+      border-radius:50%;
+      border:18px solid rgba(18,18,18,.1);
+    }
+    .headline{
+      position:absolute; left:42px; top:132px; width:240px;
+      font-size:34px; line-height:.94; font-weight:750; letter-spacing:-.05em;
+      color:rgba(18,18,18,.82);
+    }
+    .headline span{display:block}
+    .subject-slot{
+      position:absolute;
+      left:18px; bottom:20px;
+      width:245px; height:370px;
+      border-radius:24px 24px 8px 8px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.28), transparent),
+        linear-gradient(180deg,#2d2d2d,#111);
+      box-shadow:0 22px 50px rgba(0,0,0,.18);
+    }
+    .subject-slot::before{
+      content:"";
+      position:absolute; left:50%; top:54px; transform:translateX(-50%);
+      width:72px; height:72px; border-radius:50%;
+      background:rgba(255,255,255,.14);
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="ring"></div>
+
+    <!-- replace with img / svg / transparent video / animated html -->
+    <div class="subject-slot"></div>
+
+    <div class="headline">
+      <span>Tons of</span>
+      <span>strategies.</span>
+    </div>
+  </div>
+
+  <script>
+    gsap.set(".ring",{x:120,y:-40,rotation:18,opacity:0,filter:"blur(10px)"});
+    gsap.set(".subject-slot",{x:-36,y:34,scale:.96,opacity:0,filter:"blur(12px)"});
+    gsap.set(".headline",{y:20,opacity:0,filter:"blur(12px)"});
+
+    gsap.timeline()
+      .to(".ring",{
+        x:0,y:0,rotation:0,opacity:1,filter:"blur(0px)",
+        duration:1.22,ease:"expo.out"
+      })
+      .to(".subject-slot",{
+        x:0,y:0,scale:1,opacity:1,filter:"blur(0px)",
+        duration:1.05,ease:"expo.out"
+      },"<0.18")
+      .to(".headline",{
+        y:0,opacity:1,filter:"blur(0px)",
+        duration:.82,ease:"power3.out"
+      },"<0.24");
+  </script>
+</body>
+</html>

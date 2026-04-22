@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stranger Rejection Beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{
+      --bg1:#dddddd;--bg2:#d2d2d2;--ink:#6a1f37;--text:#2f2f2f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      width:100%;height:100%;overflow:hidden;
+      font-family:Georgia,"Times New Roman",serif;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .stage{
+      position:relative;width:min(100vw,720px);height:100vh;aspect-ratio:9/16;
+      margin:auto;overflow:hidden;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    }
+    .outline{
+      position:absolute;left:54px;top:120px;
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:118px;font-weight:700;line-height:.84;letter-spacing:-.075em;
+      color:transparent;
+      -webkit-text-stroke:2px rgba(106,31,55,.88);
+      opacity:.24;
+      z-index:1;
+    }
+    .subject-wrap{
+      position:absolute;left:50%;top:46%;
+      width:330px;height:520px;transform:translate(-50%,-50%);
+      filter:drop-shadow(0 24px 40px rgba(0,0,0,.18));
+      z-index:3;
+    }
+    .subject-wrap img{
+      width:100%;height:100%;object-fit:contain;display:block;
+    }
+    .red-x{
+      position:absolute;width:200px;height:200px;left:50%;top:28%;
+      transform:translate(-50%,-50%) scale(.7) rotate(-6deg);
+      z-index:5;opacity:0;
+    }
+    .red-x::before,.red-x::after{
+      content:"";position:absolute;left:50%;top:50%;
+      width:170px;height:10px;border-radius:999px;
+      background:linear-gradient(90deg,#ff6b6b,#d3142a);
+      transform-origin:center;
+      box-shadow:0 8px 30px rgba(211,20,42,.25);
+    }
+    .red-x::before{transform:translate(-50%,-50%) rotate(45deg)}
+    .red-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
+    .copy{
+      position:absolute;left:52px;right:52px;bottom:120px;z-index:6;
+    }
+    .kicker{
+      font-family:Arial,Helvetica,sans-serif;
+      font-size:26px;color:var(--text);margin-bottom:10px;opacity:0;
+    }
+    .headline{
+      font-size:clamp(62px,8vw,100px);
+      line-height:.88;letter-spacing:-.055em;color:var(--ink);
+    }
+    .headline .char{display:inline-block;opacity:0}
+  </style>
+</head>
+<body>
+  <div class="stage">
+
+
+    <div class="subject-wrap">
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80" alt="Portrait asset" />
+    </div>
+
+    <div class="red-x"></div>
+
+    <div class="copy">
+      <h1 class="headline" id="headline">strangers</h1>
+    </div>
+  </div>
+
+  <script>
+    const headline = document.getElementById("headline");
+    headline.innerHTML = headline.textContent.split("").map(c =>
+      c === " " ? `<span class="char">&nbsp;</span>` : `<span class="char">${c}</span>`
+    ).join("");
+
+    gsap.timeline()
+      .fromTo(".outline",
+        { x: -80, opacity: 0 },
+        { x: 0, opacity: .24, duration: .85, ease: "power2.out" }
+      )
+      .fromTo(".subject-wrap",
+        { y: 90, scale: .85, filter: "blur(18px)" },
+        { y: 0, scale: 1, filter: "blur(0px)", duration: .95, ease: "power3.out" },
+        "-=.55"
+      )
+      .to(".red-x", {
+        opacity: 1,
+        scale: 1,
+        duration: .35,
+        ease: "back.out(1.6)"
+      }, "-=.15")
+      .fromTo(".kicker",
+        { y: 24, opacity: 0, filter: "blur(8px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", duration: .5, ease: "power2.out" },
+        "-=.2"
+      )
+      .fromTo(".headline .char",
+        { y: 32, opacity: 0, filter: "blur(10px)" },
+        { y: 0, opacity: 1, filter: "blur(0px)", stagger: .018, duration: .56, ease: "power3.out" },
+        "-=.25"
+      );
+  </script>
+</body>
+</html>

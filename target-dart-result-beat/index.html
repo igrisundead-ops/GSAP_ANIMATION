@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>target-dart-result-beat</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root{--bg:#ece9df;--bg2:#e5e1d5;--ink:#121212;}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#111;font-family:Inter,system-ui,sans-serif;}
+    .frame{
+      position:relative;width:430px;height:760px;overflow:hidden;
+      background:linear-gradient(180deg,var(--bg),var(--bg2));
+      color:var(--ink);
+    }
+    .headline{
+      position:absolute; left:42px; top:130px; width:240px;
+      font-size:32px; line-height:.95; letter-spacing:-.05em; font-weight:750;
+    }
+    .ghost{
+      display:block;
+      font-size:74px;
+      color:rgba(18,18,18,.12);
+      font-weight:800;
+      line-height:.88;
+    }
+    .target-wrap{
+      position:absolute;
+      right:22px; bottom:150px;
+      width:220px; height:220px;
+    }
+    .target{
+      position:absolute; inset:0; border-radius:50%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,.66) 0 14%, transparent 14% 20%, rgba(18,18,18,.15) 20% 34%, transparent 34% 40%, rgba(18,18,18,.1) 40% 58%, transparent 58% 64%, rgba(18,18,18,.07) 64% 80%, transparent 80%);
+      filter:drop-shadow(0 16px 24px rgba(0,0,0,.08));
+    }
+    .dart{
+      position:absolute;
+      left:18px; top:46px;
+      width:112px; height:24px;
+      transform-origin:86px 12px;
+    }
+    .dart::before{
+      content:"";
+      position:absolute; right:0; top:4px;
+      width:56px; height:16px;
+      background:#161616;
+      clip-path:polygon(0 50%, 70% 0, 100% 50%, 70% 100%);
+      border-radius:999px 2px 2px 999px;
+    }
+    .dart::after{
+      content:"";
+      position:absolute; left:0; top:10px;
+      width:76px; height:3px; background:#161616;
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="headline">
+      <span>Zero</span>
+      <span class="ghost">results</span>
+      <span>again?</span>
+    </div>
+
+    <div class="target-wrap">
+      <!-- target can be replaced with img / svg / animated html diagram -->
+      <div class="target"></div>
+      <div class="dart"></div>
+    </div>
+  </div>
+
+  <script>
+    gsap.set(".target-wrap",{x:86,y:6,rotation:14,scale:.88,opacity:0,filter:"blur(10px)"});
+    gsap.set(".dart",{x:-56,y:-22,rotation:-24});
+    gsap.set(".headline",{y:18,opacity:0,filter:"blur(12px)"});
+
+    gsap.timeline()
+      .to(".target-wrap",{
+        x:0,y:0,rotation:0,scale:1,opacity:1,filter:"blur(0px)",
+        duration:1.0,ease:"expo.out"
+      })
+      .to(".dart",{
+        x:0,y:0,rotation:0,
+        duration:.82,ease:"power4.out"
+      },"<0.16")
+      .to(".headline",{
+        y:0,opacity:1,filter:"blur(0px)",
+        duration:.84,ease:"power3.out"
+      },"<0.15");
+  </script>
+</body>
+</html>
