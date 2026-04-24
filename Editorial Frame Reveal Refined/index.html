@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editorial Frame Reveal Refined</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --bg: #efede8;
+      --text-dark: #171717;
+      --text-mid: #555;
+      --text-faint: rgba(45, 45, 45, 0.16);
+
+      --frame-w: 330px;
+      --frame-h: 440px;
+
+      /* replace only this if needed */
+      --art-image: url("https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg");
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    .scene {
+      position: relative;
+      width: min(100vw, 1200px);
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 16% 20%, rgba(255,255,255,0.88), rgba(255,255,255,0.24) 34%, transparent 60%),
+        linear-gradient(135deg, #f5f3ef 0%, #ede9e2 52%, #e8e3dc 100%);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.11);
+      isolation: isolate;
+    }
+
+    .curve,
+    .curve-b {
+      position: absolute;
+      border: 2px solid rgba(90, 90, 90, 0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .curve {
+      width: 980px;
+      height: 980px;
+      left: -360px;
+      top: 120px;
+    }
+
+    .curve-b {
+      width: 760px;
+      height: 760px;
+      right: -250px;
+      top: -100px;
+      border-color: rgba(90, 90, 90, 0.05);
+    }
+
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.07;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(0,0,0,0.14) 0.5px, transparent 0.8px),
+        radial-gradient(circle at 75% 60%, rgba(0,0,0,0.1) 0.5px, transparent 0.8px),
+        radial-gradient(circle at 40% 80%, rgba(0,0,0,0.08) 0.5px, transparent 0.8px);
+      background-size: 20px 20px, 24px 24px, 18px 18px;
+    }
+
+    .top-label {
+      position: absolute;
+      top: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      letter-spacing: 0.45em;
+      color: rgba(30,30,30,0.56);
+      text-transform: uppercase;
+    }
+
+    .bottom-left,
+    .bottom-right {
+      position: absolute;
+      bottom: 34px;
+      font-size: 16px;
+      color: rgba(20,20,20,0.85);
+      letter-spacing: -0.02em;
+    }
+
+    .bottom-left { left: 54px; }
+    .bottom-right { right: 54px; }
+
+    .copy {
+      position: absolute;
+      left: 112px;
+      top: 270px;
+      z-index: 3;
+      width: 390px;
+    }
+
+    .kicker {
+      display: block;
+      font-size: 21px;
+      color: var(--text-mid);
+      margin-bottom: 10px;
+      letter-spacing: -0.03em;
+    }
+
+    .headline-main,
+    .headline-sub {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 0.88;
+      color: var(--text-dark);
+      letter-spacing: -0.07em;
+      font-size: clamp(58px, 7vw, 92px);
+    }
+
+    .headline-sub {
+      font-style: italic;
+      margin-top: -8px;
+    }
+
+    .ghost-word {
+      position: absolute;
+      left: 8px;
+      bottom: 110px;
+      z-index: 1;
+      font-family: Georgia, "Times New Roman", serif;
+      font-style: italic;
+      font-size: clamp(130px, 15vw, 210px);
+      letter-spacing: -0.07em;
+      color: var(--text-faint);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .word {
+      display: inline-block;
+      will-change: transform, opacity, filter;
+    }
+
+    /* FRAME SYSTEM */
+    .frame-wrap {
+      position: absolute;
+      right: 72px;
+      top: 126px;
+      width: var(--frame-w);
+      height: var(--frame-h);
+      z-index: 4;
+      transform-origin: 55% 50%;
+      filter: drop-shadow(0 24px 40px rgba(60, 38, 12, 0.22));
+    }
+
+    .frame-outer {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background:
+        linear-gradient(145deg, #7f4e12 0%, #b47a23 10%, #e6c36e 18%, #f6e2a4 26%, #b97922 40%, #8f5a16 58%, #d7aa52 72%, #f3dc98 82%, #8b5615 100%);
+      box-shadow:
+        inset 0 0 0 2px rgba(103, 59, 6, 0.34),
+        inset 0 0 0 7px rgba(255, 230, 170, 0.2),
+        inset 0 14px 18px rgba(255,255,255,0.14),
+        inset 0 -14px 18px rgba(80, 46, 6, 0.18);
+      overflow: visible;
+    }
+
+    /* ornate corner pieces */
+    .ornament {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      z-index: 3;
+      background:
+        radial-gradient(circle at 35% 35%, #fbe7af 0%, #d9a846 25%, #b67720 48%, #8c5614 72%, #74440c 100%);
+      box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.22),
+        inset 0 -3px 5px rgba(85,50,7,0.24);
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: "";
+      position: absolute;
+      background:
+        radial-gradient(circle at 35% 35%, #f8df9a 0%, #cf9a37 35%, #9a6217 75%, #7a470d 100%);
+      border-radius: 999px;
+    }
+
+    .ornament::before {
+      width: 52px;
+      height: 18px;
+      left: 10px;
+      top: 27px;
+    }
+
+    .ornament::after {
+      width: 18px;
+      height: 52px;
+      left: 27px;
+      top: 10px;
+    }
+
+    .tl { left: -16px; top: -16px; }
+    .tr { right: -16px; top: -16px; }
+    .bl { left: -16px; bottom: -16px; }
+    .br { right: -16px; bottom: -16px; }
+
+    .frame-mid {
+      position: absolute;
+      inset: 22px;
+      border: 10px solid rgba(120, 72, 14, 0.82);
+      box-shadow:
+        inset 0 0 0 2px rgba(255,227,163,0.28),
+        inset 0 0 22px rgba(73, 43, 7, 0.18);
+      background:
+        linear-gradient(135deg, rgba(255,223,152,0.22), rgba(125,78,14,0.14));
+    }
+
+    .frame-inner {
+      position: absolute;
+      inset: 42px;
+      overflow: hidden;
+      background: #201d1a;
+      border: 4px solid rgba(85, 54, 12, 0.55);
+      box-shadow:
+        inset 0 0 30px rgba(0,0,0,0.22),
+        0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .art {
+      position: absolute;
+      inset: 0;
+      background-image: var(--art-image);
+      background-size: cover;
+      background-position: center center;
+      transform-origin: center center;
+      will-change: transform, opacity, filter;
+    }
+
+    .art-shadow {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.08), transparent 28%, rgba(0,0,0,0.14));
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .sheen {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(112deg,
+        rgba(255,255,255,0.18) 0%,
+        rgba(255,255,255,0.06) 18%,
+        transparent 34%,
+        transparent 62%,
+        rgba(255,255,255,0.1) 80%,
+        rgba(255,255,255,0.18) 100%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    @media (max-width: 820px) {
+      .copy {
+        left: 50px;
+        top: 215px;
+        width: 300px;
+      }
+
+      .ghost-word {
+        left: 0;
+        bottom: 120px;
+      }
+
+      .frame-wrap {
+        right: 26px;
+        top: 210px;
+        width: 280px;
+        height: 372px;
+      }
+
+      .bottom-left,
+      .bottom-right {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="scene">
+    <div class="curve"></div>
+    <div class="curve-b"></div>
+    <div class="grain"></div>
+
+    <div class="copy">
+      <span class="kicker">Além de ser, você</span>
+      <span class="headline-main"><span class="word">precisa</span></span>
+      <span class="headline-sub"><span class="word">parecer</span></span>
+    </div>
+
+    <div class="ghost-word">Valioso</div>
+
+    <div class="frame-wrap">
+      <div class="frame-outer">
+        <div class="ornament tl"></div>
+        <div class="ornament tr"></div>
+        <div class="ornament bl"></div>
+        <div class="ornament br"></div>
+
+        <div class="frame-mid"></div>
+
+        <div class="frame-inner">
+          <div class="art"></div>
+          <div class="face-cut"></div>
+          <div class="art-shadow"></div>
+          <div class="sheen"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-right">2024</div>
+  </section>
+
+  <script>
+    gsap.set(".top-label, .bottom-left, .bottom-right", {
+      opacity: 0,
+      y: 10
+    });
+
+    gsap.set(".curve, .curve-b", {
+      opacity: 0,
+      scale: 1.05
+    });
+
+    gsap.set(".kicker", {
+      opacity: 0,
+      x: -26,
+      filter: "blur(8px)"
+    });
+
+    gsap.set(".word", {
+      opacity: 0,
+      x: -70,
+      y: 18,
+      rotate: -2,
+      filter: "blur(14px)"
+    });
+
+    gsap.set(".ghost-word", {
+      opacity: 0,
+      x: -35,
+      y: 18,
+      filter: "blur(12px)"
+    });
+
+    gsap.set(".frame-wrap", {
+      opacity: 0,
+      x: 125,
+      y: 18,
+      rotate: 5.5,
+      scale: 0.94,
+      filter: "blur(14px)"
+    });
+
+    gsap.set(".art", {
+      x: 85,
+      scale: 1.08,
+      filter: "blur(8px)"
+    });
+
+    gsap.set(".ornament", {
+      scale: 0.75,
+      opacity: 0
+    });
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.out" }
+    });
+
+    tl.to(".curve, .curve-b", {
+      opacity: 1,
+      scale: 1,
+      duration: 1.15,
+      stagger: 0.06
+    }, 0)
+
+    .to(".top-label, .bottom-left, .bottom-right", {
+      opacity: 1,
+      y: 0,
+      duration: 0.75,
+      stagger: 0.05
+    }, 0.06)
+
+    .to(".kicker", {
+      opacity: 1,
+      x: 0,
+      filter: "blur(0px)",
+      duration: 0.85
+    }, 0.18)
+
+    .to(".word", {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      rotate: 0,
+      filter: "blur(0px)",
+      duration: 1,
+      stagger: 0.14
+    }, 0.32)
+
+    .to(".ghost-word", {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      filter: "blur(0px)",
+      duration: 1.05,
+      ease: "power2.out"
+    }, 0.5)
+
+    .to(".frame-wrap", {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      rotate: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      duration: 1.15,
+      ease: "expo.out"
+    }, 0.8)
+
+    .to(".ornament", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.6,
+      stagger: 0.04
+    }, 1.02)
+
+    /* inner image slides to fit the frame window */
+    .to(".art", {
+      x: 0,
+      scale: 1,
+      filter: "blur(0px)",
+      duration: 1.05,
+      ease: "power3.out"
+    }, 1.02)
+
+    .fromTo(".sheen",
+      { xPercent: -42, opacity: 0.15 },
+      {
+        xPercent: 16,
+        opacity: 0.5,
+        duration: 1.25,
+        ease: "power2.out"
+      },
+      1.16
+    );
+
+    gsap.to(".frame-wrap", {
+      y: "+=8",
+      duration: 2.8,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+      delay: 2.2
+    });
+
+    gsap.to(".ghost-word", {
+      x: "+=10",
+      duration: 3.2,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+      delay: 2.2
+    });
+  </script>
+</body>
+</html>
